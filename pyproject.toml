@@ -1,0 +1,55 @@
+[project]
+name = "instagram-bot"
+version = "0.1.0"
+description = "Bot de Instagram con FastAPI"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "httpx",
+  "pydantic>=2",
+  "pydantic-settings",
+  "redis",
+  "jinja2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+  "respx",            # mocks httpx
+  "ruff",             # lint
+  "black",            # format
+  "mypy",             # tipos
+  "types-requests",   # (si usas requests)
+  "types-redis",      # stubs útiles
+  "pre-commit",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E","F","I","UP","B","PERF","RUF"]
+ignore = ["E501"]  # si preferís que Black maneje los saltos de línea
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+plugins = []
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=app --cov-report=term-missing"
+python_files = "test_*.py"
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
