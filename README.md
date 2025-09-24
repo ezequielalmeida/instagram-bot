@@ -132,3 +132,23 @@ git commit -m "chore: normalize EOL and mark binaries"
 
 Â© 2025
 
+
+## Docker Compose
+Para levantar la app junto con Redis y Postgres:
+```bash
+docker compose up --build
+```
+El servicio `app` usa los valores de `.env` y `.env.dev`, pero el `IG_DATABASE_URL` y `IG_REDIS_URL` se sobreescriben para apuntar a los contenedores `db` y `redis`. Las credenciales por defecto son `instagram_bot`/`instagram_bot`.
+
+### Usar SQLite dentro del contenedor
+Si preferís SQLite en lugar de Postgres, comentá el servicio `db` y sobrescribí la variable:
+```bash
+docker compose run --rm app \
+  uvicorn app.main:api --host 0.0.0.0 --port 8000 --reload
+```
+y en `docker-compose.yml` ajustá `IG_DATABASE_URL=sqlite+aiosqlite:///app/data/instagram_bot.db` y montá un volumen persistente en `/app/data`.
+
+Para limpiar los recursos creados por Compose:
+```bash
+docker compose down --volumes
+```
