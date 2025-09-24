@@ -20,6 +20,42 @@ pre-commit install
 pre-commit run --all-files -v
 ```
 
+## Configuración 12-factor
+Este proyecto sigue el principio 12-factor: toda la configuración proviene de variables de entorno. El loader en `app/core/config.py` primero lee `.env` (si existe), y después `.env.<entorno>` (`.env.dev`, `.env.staging`, etc.) sobreescribiendo lo que corresponda.
+
+### Entornos soportados
+- `default`: entorno base/local (valor por defecto cuando no hay variable definida).
+- `dev`: desarrollo con `DEBUG` encendido.
+- `staging`: pre-producción, mismo código que prod pero con recursos aislados.
+- `prod`: producción. Usá este valor para instancias públicas.
+
+Definí el entorno exportando `IG_ENVIRONMENT`, `IG_ENV`, `APP_ENV` o `ENVIRONMENT`. Ejemplo en PowerShell:
+```powershell
+$Env:IG_ENVIRONMENT = 'dev'
+uvicorn app.main:api --reload --port 8000
+```
+
+### Variables disponibles (prefijo `IG_` opcional)
+- `IG_APP_NAME` / `APP_NAME` (`instagram-bot`)
+- `IG_API_PREFIX` / `API_PREFIX` (`/`)
+- `IG_DEBUG` / `DEBUG` (`false` por defecto, pero se habilita si el entorno es `default` o `dev`)
+- `IG_LOG_LEVEL` / `LOG_LEVEL` (`INFO`)
+- `IG_DATABASE_URL` / `DATABASE_URL`
+- `IG_REDIS_URL` / `REDIS_URL`
+- `IG_INSTAGRAM_APP_ID` / `INSTAGRAM_APP_ID`
+- `IG_INSTAGRAM_APP_SECRET` / `INSTAGRAM_APP_SECRET`
+- `IG_WEBHOOK_VERIFY_TOKEN` / `WEBHOOK_VERIFY_TOKEN`
+- `IG_DOCS_URL` / `DOCS_URL` (`/docs`)
+- `IG_REDOC_URL` / `REDOC_URL` (`/redoc`)
+- `IG_OPENAPI_URL` / `OPENAPI_URL` (`/openapi.json`)
+
+Podés extender la configuración agregando campos en `AppSettings`. Para leerla en cualquier módulo:
+```python
+from app.core.config import get_settings
+
+settings = get_settings()
+print(settings.environment)
+```
 ## Ejecutar en desarrollo
 ```bash
 uvicorn app.main:api --reload --port 8000
@@ -95,3 +131,4 @@ git commit -m "chore: normalize EOL and mark binaries"
 ---
 
 Â© 2025
+
